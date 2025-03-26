@@ -1,0 +1,86 @@
+---
+title: 'Instalog MCP'
+description: 'Get started with Instalog using Model Context Protocol (MCP)'
+---
+
+## What is Model Context Protocol (MCP)?
+
+Model Context Protocol (MCP) is an open standard developed by Anthropic that enables secure, two-way connections between AI models and data sources. It allows AI assistants like Claude to directly interact with Instalog's logging and analytics features, providing enhanced context and functionality.
+
+With MCP integration, you can:
+
+- Query Instalog data directly through AI assistants
+- Analyze logs and events without switching between tools
+- Generate insights from your application's event data
+- Troubleshoot issues more efficiently with contextual information
+
+## Installing Instalog MCP
+
+To integrate Instalog with MCP-compatible AI tools, run the following command:
+
+```bash
+npx @mintlify/mcp add instalog
+```
+
+During installation, you'll be prompted for authentication:
+
+```
+> What is the Authorization (basic token)?
+```
+
+Enter your Instalog API key, which you can find in your [Instalog dashboard](https://beta.instalog.dev/dashboard) under API Keys.
+
+## Starting the MCP Server
+
+After installation, start your MCP server with:
+
+```bash
+npm --prefix ~/.mcp/instalog start
+```
+
+This will launch the Instalog MCP server locally, allowing MCP clients to connect to your Instalog data.
+
+## Connecting to AI Tools
+
+### Claude Desktop App
+
+To use the Instalog MCP server with Claude:
+
+1. In the Claude Desktop App, navigate to **Settings > Developer**
+2. Click on **Edit Config**
+3. Add the following to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "instalog": {
+      "command": "npm",
+      "args": [
+        "--prefix",
+        "~/.mcp/instalog",
+        "start"
+      ]
+    }
+  }
+}
+```
+
+4. Look for the hammer icon in Claude, which indicates available MCP tools
+5. You can now use natural language to query your Instalog data
+
+## Example Queries
+
+Once connected, you can ask Claude questions like:
+
+- "Show me all error events from the past 24 hours"
+- "What are the most common user actions in my app?"
+- "Display crash reports for the iOS app from last week"
+- "Analyze the trend of login failures over the past month"
+
+## What's Next?
+
+- Explore our [SDK documentation](/sdk) to implement Instalog in your applications
+- Check out the [API Reference](/api-reference/introduction) for direct API integration
+- Learn about [best practices](/best-practices) for effective logging and monitoring
+
+For any issues or questions about the Instalog MCP integration, please reach out to our support team at [support@instalog.dev](mailto:support@instalog.dev). 

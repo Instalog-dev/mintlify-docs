@@ -1,0 +1,151 @@
+---
+title: 'Flutter SDK'
+description: 'Integrate Instalog into your Flutter applications'
+---
+
+## Installation
+
+Add `instalog` to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  instalog: ^0.1.0
+```
+
+## Usage
+
+### Initialization
+
+Initialize the Instalog SDK at the start of your app:
+
+```dart
+import 'package:instalog/instalog.dart';
+
+// Initialize in main.dart
+void main() {
+  // Set up crash handling
+  Instalog.instance.crash.setup(
+    appRunner: () => runApp(const MyApp()),
+  );
+}
+
+// Initialize with your API key in a widget
+@override
+void initState() {
+  super.initState();
+  Instalog.instance.initialize(apiKey: 'your_api_key_here');
+}
+```
+
+### Logging Events
+
+Track custom events with optional parameters:
+
+```dart
+// Simple event
+Instalog.instance.logEvent(event: 'button_clicked');
+
+// Event with parameters
+Instalog.instance.logEvent(
+  event: 'user_login',
+  params: {
+    'user_id': '12345',
+    'method': 'email',
+    'timestamp': DateTime.now().toIso8601String(),
+  },
+);
+```
+
+### User Identification
+
+Identify users to track their activities:
+
+```dart
+// Set user ID after login
+Instalog.instance.identifyUser('user@example.com');
+
+// Clear user ID after logout
+Instalog.instance.clearUserId();
+```
+
+### Showing Feedback Modal
+
+Display the in-app feedback modal to collect user input:
+
+```dart
+await Instalog.instance.showFeedbackModal();
+
+// With prefilled content
+await Instalog.instance.showFeedbackModal(
+  initialMessage: 'I found an issue with...',
+  title: 'Report a Problem',
+);
+```
+
+### Crash Reporting
+
+Instalog automatically captures uncaught exceptions when set up with `crash.setup()`. To manually report a caught exception:
+
+```dart
+try {
+  // Your code that might throw an exception
+} catch (error, stack) {
+  Instalog.instance.sendCrash(error, stack);
+}
+```
+
+### Testing Crash Reporting
+
+Simulate a crash to test your implementation:
+
+```dart
+// This will trigger a crash for testing purposes
+Instalog.instance.crash.simulateCrash();
+```
+
+## Advanced Configuration
+
+### Custom Initialization
+
+Configure the SDK with advanced options:
+
+```dart
+await Instalog.instance.initialize(
+  apiKey: 'your_api_key_here',
+  config: InstalogConfig(
+    enableCrashReporting: true,
+    enableNetworkLogging: true,
+    logLevel: LogLevel.verbose,
+    tags: {'environment': 'production'},
+    userId: currentUser?.id,
+    customEndpoint: 'https://your-proxy.example.com/instalog',
+  ),
+);
+```
+
+
+## Platform-Specific Notes
+
+### iOS
+Ensure you have added the necessary permissions to your `Info.plist` file if your app collects user data.
+
+### Android
+If targeting Android 13 (API level 33) or higher, ensure you request the appropriate permissions for collecting user data.
+
+
+
+### Common Issues
+
+1. **SDK Not Initialized**
+   - Ensure `initialize()` is called before using other SDK methods
+   - Verify your API key is correct
+
+2. **Missing Crash Reports**
+   - Check that crash reporting is enabled in your configuration
+   - Verify your app has network permissions
+
+3. **Events Not Being Logged**
+   - Check network connectivity
+   - Ensure the SDK is properly initialized
+
+For additional support, contact support@instalog.com 

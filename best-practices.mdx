@@ -1,0 +1,94 @@
+---
+title: 'Best Practices for Instalog'
+description: 'Implementing effective logging and monitoring with Instalog requires strategic planning and consistent implementation. Follow these best practices to get the most out of your Instalog integration.'
+---
+
+## Event Logging Strategy
+
+### Consistency in Event Naming
+
+Use a consistent naming convention for events across your application:
+
+- Use descriptive, action-oriented names (e.g., `user_registered`, `payment_processed`)
+- Avoid generic names like `click` or `view`
+- Utilize namespaces for better organization (e.g., `auth.login_success`, `payment.transaction_failed`)
+
+```javascript
+// Good
+instalog.log('payment_processed', { amount: 99.99, currency: 'USD' });
+
+// Better
+instalog.log('payment.transaction_completed', { 
+  amount: 99.99, 
+  currency: 'USD',
+  method: 'credit_card',
+  status: 'success'
+});
+```
+
+### Structured Metadata
+
+Include relevant metadata with each event to provide context:
+
+- Always include identifiers (user ID, session ID, etc.)
+- Add relevant business metrics (transaction amount, subscription tier, etc.)
+- Include environmental context (device info, app version, etc.)
+
+## User Identification
+
+### Implement Early and Consistently
+
+Identify users as early as possible in their session:
+
+```kotlin
+// After user authentication
+instalog.identifyUser("user123");
+```
+
+### Anonymize Sensitive Data
+
+Never log personal identifiable information (PII) directly:
+
+- Use anonymized identifiers
+- Hash or tokenize sensitive information
+- Follow data protection regulations (GDPR, CCPA, etc.)
+
+## Crash Reporting
+
+### Group Similar Errors
+
+Configure error grouping to reduce noise in your error reports:
+
+```javascript
+// Configure error grouping during initialization
+await Instalog.initialize('YOUR_API_KEY', {
+  errorGrouping: {
+    enabled: true,
+    errorThreshold: 5,
+    timeWindowMs: 60000
+  }
+});
+```
+
+## Implementation Checklist
+
+- [ ] Initialize SDK as early as possible in app lifecycle
+- [ ] Identify users after authentication
+- [ ] Implement consistent event naming strategy
+- [ ] Include relevant metadata with all events
+- [ ] Set up proper error grouping
+- [ ] Configure appropriate log levels
+- [ ] Test crash reporting in development
+- [ ] Monitor dashboard regularly for issues
+- [ ] Implement automated alerts for critical errors
+
+## Integration with MCP
+
+When using Model Context Protocol with Instalog:
+
+- Structure your queries to be specific and focused
+- Include time ranges when querying historical data
+- Use natural language to describe the patterns you're looking for
+- Leverage MCP for automated analysis of recurring issues
+
+For additional support with implementing these best practices, contact our team at [support@instalog.dev](mailto:support@instalog.dev). 

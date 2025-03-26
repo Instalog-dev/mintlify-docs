@@ -1,0 +1,75 @@
+---
+title: 'SDK Documentation'
+description: 'Integrate Instalog into your mobile applications'
+---
+
+## Available SDKs
+
+<CardGroup cols={2}>
+  <Card
+    title="Android SDK"
+    icon="android"
+    href="/sdk/android"
+  >
+    Comprehensive logging and crash reporting for native Android applications
+  </Card>
+  <Card
+    title="iOS SDK"
+    icon="apple"
+    href="/sdk/ios"
+  >
+    Powerful analytics and feedback collection for native iOS applications
+  </Card>
+  <Card
+    title="React Native SDK"
+    icon="react"
+    href="/sdk/react-native"
+  >
+    Cross-platform solution for React Native applications
+  </Card>
+  <Card
+    title="Flutter SDK"
+    icon="mobile"
+    href="/sdk/flutter"
+  >
+    Seamless integration for Flutter applications
+  </Card>
+</CardGroup>
+
+## Core Features
+
+All Instalog SDKs provide the following core features:
+
+### Event Logging
+Track custom events with flexible parameters to understand user behavior and application usage patterns.
+
+```js
+// Example (syntax varies by platform)
+Instalog.log('button_clicked', { screen: 'HomeScreen' });
+```
+
+### User Identification
+Associate events and crashes with specific users to trace issues to individual accounts.
+
+```js
+// Example (syntax varies by platform)
+Instalog.identifyUser('user_email@example.com');
+```
+
+### Crash Reporting
+Automatically detect and report crashes with detailed stack traces and device information.
+
+### Feedback Collection
+Collect user feedback directly within your app using our customizable feedback modal.
+
+## Getting Started
+
+1. **Sign up** for an Instalog account at [instalog.dev](https://instalog.dev)
+2. **Get your API key** from the dashboard
+3. **Install the SDK** for your platform using the instructions in the platform-specific documentation
+4. **Initialize the SDK** in your application code
+5. **Start logging events** and collecting valuable data
+
+## Need Help?
+
+If you encounter any issues or have questions about integrating Instalog into your application, please reach out to our support team at [support@instalog.com](mailto:support@instalog.com). 

@@ -1,0 +1,179 @@
+---
+title: 'React Native SDK'
+description: 'Integrate Instalog into your React Native applications'
+---
+
+## Installation
+
+```sh
+npm install react-native-instalog
+```
+
+## Usage
+
+### Initialization
+
+Initialize Instalog at the beginning of your app, typically in your main App file:
+
+```js
+import { Instalog } from 'react-native-instalog';
+
+// Initialize with default options
+await Instalog.initialize('YOUR_API_KEY');
+
+// Or with custom options
+await Instalog.initialize('YOUR_API_KEY', {
+  isFeedbackEnabled: true,
+  isCrashEnabled: true,
+  isLogEnabled: true,
+  isLoggerEnabled: true,
+  autoCaptureCrashes: true,
+  errorGrouping: {
+    enabled: true,
+    flushIntervalMs: 30000,
+    errorThreshold: 5,
+    timeWindowMs: 60000,
+    flushOnBackground: true,
+  },
+});
+```
+
+### User Identification
+
+Identify your users to associate logged events and crashes with specific users:
+
+```js
+await Instalog.identifyUser('user_id_or_email');
+```
+
+### Event Logging
+
+Log specific events with optional properties:
+
+```js
+await Instalog.log('button_clicked', {
+  screen: 'HomeScreen',
+  buttonType: 'primary',
+  timestamp: new Date().toISOString(),
+});
+```
+
+### Error Boundary
+
+Use the ErrorBoundary component to catch and report React component errors:
+
+```jsx
+import { Instalog } from 'react-native-instalog';
+
+export default function App() {
+  return (
+    <Instalog.ErrorBoundary
+      fallback={<YourCustomErrorScreen />}
+      onError={(error, errorInfo) => {
+        // Handle the error event, if needed
+        console.log('Caught an error:', error);
+      }}
+    >
+      <YourApp />
+    </Instalog.ErrorBoundary>
+  );
+}
+```
+
+### Manual Error Reporting
+
+Send manual error reports:
+
+```js
+try {
+  // Some code that might throw
+  riskyOperation();
+} catch (error) {
+  if (error instanceof Error) {
+    // Format the error into a report
+    const report = Instalog.formatErrorReport(error);
+    
+    // Send the report to Instalog
+    await Instalog.sendCrash('Custom Error Name', report);
+  }
+}
+```
+
+### User Feedback
+
+Show a feedback modal to collect user feedback:
+
+```js
+await Instalog.showFeedbackModal();
+```
+
+### Test/Debug Methods
+
+```js
+// Simulate a crash for testing
+await Instalog.simulateCrash();
+```
+
+## Advanced Configuration
+
+### Error Grouping
+
+Instalog can group similar errors together to reduce noise in your error reports:
+
+```js
+// Configure error grouping during initialization
+await Instalog.initialize('YOUR_API_KEY', {
+  errorGrouping: {
+    enabled: true,                // Enable error grouping
+    flushIntervalMs: 30000,       // Check for group flushes every 30 seconds
+    errorThreshold: 5,            // Send after 5 occurrences of similar errors
+    timeWindowMs: 60000,          // Send after 1 minute regardless of count
+    flushOnBackground: true,      // Flush when app goes to background
+    requireNetwork: true,         // Only send reports when network is available
+    maxErrorsPerGroup: 10,        // Store at most 10 errors per group
+    dynamicFlushInterval: true,   // Adjust flush intervals based on error frequency
+  },
+});
+```
+
+### Common Issues
+
+1. **SDK Not Initialized**
+   - Make sure to await the `initialize` call
+   - Verify your API key is correct
+
+2. **Missing Error Reports**
+   - Check that `isCrashEnabled` is set to true
+   - Verify network connectivity
+
+3. **Error Boundary Not Working**
+   - Ensure the ErrorBoundary is placed correctly in your component tree
+   - Check that you've provided a fallback component
+
+For additional support, please contact support@instalog.com.
+
+## API Reference
+
+### Instalog
+
+| Method | Description |
+|--------|-------------|
+| `initialize(apiKey, options)` | Initializes the Instalog SDK with API key and options |
+| `identifyUser(userId)` | Sets the user ID for tracking |
+| `log(event, properties)` | Logs an event with optional properties |
+| `sendCrash(name, report)` | Manually sends a crash report |
+| `showFeedbackModal()` | Shows the feedback collection UI |
+| `simulateCrash()` | Simulates a crash for testing |
+| `formatErrorReport(error, errorInfo)` | Formats an error into a structured report |
+| `ErrorBoundary` | React component to catch and report rendering errors |
+
+### Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `isCrashEnabled` | boolean | false | Enable crash reporting |
+| `isFeedbackEnabled` | boolean | false | Enable user feedback collection |
+| `isLogEnabled` | boolean | false | Enable event logging |
+| `isLoggerEnabled` | boolean | false | Enable console logging |
+| `autoCaptureCrashes` | boolean | false | Automatically capture unhandled JS errors |
+| `errorGrouping` | object | See above | Configuration for error grouping behavior | 
