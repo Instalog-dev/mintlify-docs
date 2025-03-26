@@ -129,18 +129,6 @@ Instalog.shared.logEvent(log: log)
 - Programmatic feedback submission
 - Can be enabled/disabled through configuration
 
-```swift
-// Show feedback modal with pre-filled information
-Instalog.shared.showFeedbackModal(prefilledTitle: "App Feedback", prefilledMessage: "I found an issue with...")
-
-// Submit feedback programmatically
-let feedback = InstalogFeedbackModel(
-    title: "Feature Request",
-    message: "Please add dark mode support",
-    email: "user@example.com"
-)
-Instalog.shared.submitFeedback(feedback)
-```
 
 ### Configurable Components
 - Selectively enable or disable features based on your needs
@@ -222,11 +210,3 @@ Instalog.shared.logEvent(log: detailedLog)
 
 For additional support, contact us at support@instalog.com
 
-## Author
-
-Ogbonda Chiziaruhoma  
-chiziaruhoma@gmail.com
-
-## License
-
-InstalogIOS is available under the MIT license. See the LICENSE file for more info. 
