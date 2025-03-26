@@ -37,6 +37,27 @@ void initState() {
 }
 ```
 
+### Configuration Options
+
+Customize Instalog SDK behavior with `InstalogOptions`:
+
+```dart
+import 'package:instalog_platform_interface/instalog_platform_interface.dart';
+
+// Initialize with custom options
+Instalog.instance.initialize(
+  apiKey: 'your_api_key_here',
+  options: const InstalogOptions(
+    isLogEnabled: true,     // Enable event logging
+    isLoggerEnabled: false, // Disable internal debug logs
+    isCrashEnabled: true,   // Enable crash reporting
+    isFeedbackEnabled: true // Enable feedback modal
+  ),
+);
+```
+
+All configuration options default to `true` except for `isLoggerEnabled` (defaults to `false`).
+
 ### Logging Events
 
 Track custom events with optional parameters:
@@ -56,30 +77,12 @@ Instalog.instance.logEvent(
 );
 ```
 
-### User Identification
-
-Identify users to track their activities:
-
-```dart
-// Set user ID after login
-Instalog.instance.identifyUser('user@example.com');
-
-// Clear user ID after logout
-Instalog.instance.clearUserId();
-```
-
 ### Showing Feedback Modal
 
 Display the in-app feedback modal to collect user input:
 
 ```dart
 await Instalog.instance.showFeedbackModal();
-
-// With prefilled content
-await Instalog.instance.showFeedbackModal(
-  initialMessage: 'I found an issue with...',
-  title: 'Report a Problem',
-);
 ```
 
 ### Crash Reporting
@@ -94,6 +97,17 @@ try {
 }
 ```
 
+### User Identification
+
+Associate events with a specific user:
+
+```dart
+// Identify user with a unique ID
+Instalog.instance.identifyUser(userId: 'user_12345');
+```
+
+Identifying users allows you to track user-specific behavior and associate events and crashes with particular users, which is helpful for debugging and analytics.
+
 ### Testing Crash Reporting
 
 Simulate a crash to test your implementation:
@@ -103,27 +117,6 @@ Simulate a crash to test your implementation:
 Instalog.instance.crash.simulateCrash();
 ```
 
-## Advanced Configuration
-
-### Custom Initialization
-
-Configure the SDK with advanced options:
-
-```dart
-await Instalog.instance.initialize(
-  apiKey: 'your_api_key_here',
-  config: InstalogConfig(
-    enableCrashReporting: true,
-    enableNetworkLogging: true,
-    logLevel: LogLevel.verbose,
-    tags: {'environment': 'production'},
-    userId: currentUser?.id,
-    customEndpoint: 'https://your-proxy.example.com/instalog',
-  ),
-);
-```
-
-
 ## Platform-Specific Notes
 
 ### iOS
@@ -132,7 +125,98 @@ Ensure you have added the necessary permissions to your `Info.plist` file if you
 ### Android
 If targeting Android 13 (API level 33) or higher, ensure you request the appropriate permissions for collecting user data.
 
+## Advanced Example
 
+Here's a complete example showing how to use multiple Instalog features together:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:instalog/instalog.dart';
+import 'package:instalog_platform_interface/instalog_platform_interface.dart';
+
+void main() {
+  // Set up crash handling
+  Instalog.instance.crash.setup(
+    appRunner: () => runApp(const MyApp()),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with options
+    Instalog.instance.initialize(
+      apiKey: 'your_api_key_here',
+      options: const InstalogOptions(
+        isLogEnabled: true,
+        isLoggerEnabled: false,
+        isCrashEnabled: true,
+        isFeedbackEnabled: true,
+      ),
+    );
+    
+    // Identify the user
+    Instalog.instance.identifyUser(userId: 'user_${DateTime.now().millisecondsSinceEpoch}');
+    
+    // Log app start event
+    Instalog.instance.logEvent(
+      event: 'app_started',
+      params: {
+        'timestamp': DateTime.now().toIso8601String(),
+        'version': '1.0.0',
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Instalog Example')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => Instalog.instance.showFeedbackModal(),
+              child: const Text('Show Feedback Modal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                try {
+                  // Simulate an error
+                  throw Exception('Test exception');
+                } catch (error, stack) {
+                  Instalog.instance.sendCrash(error, stack);
+                }
+              },
+              child: const Text('Simulate & Report Error'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Troubleshooting
 
 ### Common Issues
 
