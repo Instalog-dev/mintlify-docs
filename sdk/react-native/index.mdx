@@ -17,7 +17,7 @@ Initialize Instalog at the beginning of your app, typically in your main App fil
 
 ```js
 import { Instalog } from 'react-native-instalog';
-
+```
 
 ## Platform-specific Setup
 
@@ -25,13 +25,14 @@ import { Instalog } from 'react-native-instalog';
 
 For feedback functionality on Android, ensure you have the Instalog activity registered in your AndroidManifest.xml:
 
-```xml
+```kotlin
 <activity
   android:name="dev.instalog.mobile.feedback.InstalogFeedbackActivity"
   android:label="Instalog"
   android:theme="@style/Theme.Instalog"/>
 ```
 
+```kotlin
 // Initialize with default options
 await Instalog.initialize('YOUR_API_KEY');
 
