@@ -28,7 +28,8 @@
               "sdk/android/index",
               "sdk/ios/index",
               "sdk/react-native/index",
-              "sdk/flutter/index"
+              "sdk/flutter/index",
+              "sdk/expo/index"
             ]
           }
         ]

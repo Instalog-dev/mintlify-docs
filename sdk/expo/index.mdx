@@ -1,0 +1,210 @@
+---
+title: 'Expo SDK'
+description: 'Integrate Instalog into your Expo applications'
+---
+
+## Installation
+
+```sh
+npm i @instalog.dev/expo
+```
+
+## Expo Config Plugin
+
+This package auto-installs necessary native dependencies for Expo projects.
+
+### Android Configuration
+
+For Android, make sure to add the Instalog Feedback Activity to your AndroidManifest.xml:
+
+```xml
+<activity
+  android:name="dev.instalog.mobile.feedback.InstalogFeedbackActivity"
+  android:label="Instalog"
+  android:theme="@style/Theme.Instalog" />
+```
+
+This should be placed inside the `<application>` tags of your manifest file.
+
+## Usage
+
+### Initialization
+
+Initialize Instalog at the beginning of your app, typically in your main App file:
+
+```js
+import { Instalog } from '@instalog.dev/expo';
+
+// Initialize with default options
+await Instalog.initialize('YOUR_API_KEY');
+
+// Or with custom options
+await Instalog.initialize('YOUR_API_KEY', {
+  isLogEnabled: true,
+  isCrashEnabled: true,
+  isFeedbackEnabled: true,
+  isLoggerEnabled: false, // Debug logging
+  autoCaptureCrashes: true, // Automatically capture unhandled JS errors
+  errorGrouping: {
+    enabled: true,
+    flushIntervalMs: 30000, // 30 seconds
+    errorThreshold: 5,
+    timeWindowMs: 60000, // 1 minute
+    flushOnBackground: true,
+    requireNetwork: true,
+    maxErrorsPerGroup: 10,
+    dynamicFlushInterval: true,
+  }
+});
+
+// Identify your user after initialization
+await Instalog.identifyUser("user123");
+```
+
+### User Identification
+
+Identify your users to associate logged events and crashes with specific users:
+
+```js
+await Instalog.identifyUser('user_id_or_email');
+```
+
+### Event Logging
+
+Log specific events with optional properties:
+
+```js
+await Instalog.logEvent('button_clicked', {
+  button_name: 'submit',
+  screen: 'login',
+});
+```
+
+### User Feedback
+
+Show a feedback modal to collect user feedback:
+
+```js
+await Instalog.showFeedbackModal();
+```
+
+### Crash Reporting
+
+Crash reporting is automatically enabled after initialization. The SDK can automatically capture unhandled JavaScript errors when `autoCaptureCrashes` is enabled (default).
+
+You can also manually report crashes:
+
+```js
+try {
+  // Your code that might throw an exception
+} catch (error) {
+  await Instalog.sendCrash('Error name', error.stack || error.toString());
+}
+```
+
+For more structured error reporting, you can use the formatErrorReport helper:
+
+```js
+try {
+  // Your code that might throw an exception
+} catch (error) {
+  const formattedError = Instalog.formatErrorReport(error, errorInfo);
+  await Instalog.sendCrash('Caught Error', formattedError);
+}
+```
+
+### Global Error Handling
+
+The SDK automatically sets up global error handling when initialized with `autoCaptureCrashes: true` (default). This captures unhandled JavaScript errors and reports them to Instalog.
+
+You can test this functionality with:
+
+```js
+// This will trigger the global error handler
+setTimeout(() => {
+  throw new Error("Test Global Error");
+}, 0);
+```
+
+### Test/Debug Methods
+
+```js
+// Simulate a crash for testing
+await Instalog.simulateCrash();
+```
+
+## Advanced Configuration
+
+### Error Grouping
+
+Instalog can group similar errors together to reduce noise in your error reports:
+
+```js
+// Configure error grouping during initialization
+await Instalog.initialize('YOUR_API_KEY', {
+  errorGrouping: {
+    enabled: true,                // Enable error grouping
+    flushIntervalMs: 30000,       // Check for group flushes every 30 seconds
+    errorThreshold: 5,            // Send after 5 occurrences of similar errors
+    timeWindowMs: 60000,          // Send after 1 minute regardless of count
+    flushOnBackground: true,      // Flush when app goes to background
+    requireNetwork: true,         // Only send reports when network is available
+    maxErrorsPerGroup: 10,        // Store at most 10 errors per group
+    dynamicFlushInterval: true,   // Adjust flush intervals based on error frequency
+  },
+});
+```
+
+### Common Issues
+
+1. **SDK Not Initialized**
+   - Make sure to await the `initialize` call
+   - Verify your API key is correct
+
+2. **Missing Error Reports**
+   - Check that `isCrashEnabled` is set to true
+   - Verify network connectivity
+
+3. **Expo Config Plugin Issues**
+   - Ensure you've properly configured the plugin in your app.json
+   - Run `expo prebuild --clean` to ensure the plugin is applied
+
+For additional support, please contact support@instalog.dev.
+
+## API Reference
+
+### Instalog
+
+| Method | Description |
+|--------|-------------|
+| `initialize(key, options)` | Initializes the SDK with your API key and optional configuration |
+| `identifyUser(userId)` | Identifies the current user |
+| `logEvent(event, params)` | Logs an event with optional parameters |
+| `sendCrash(error, stack)` | Manually sends a crash report |
+| `showFeedbackModal()` | Shows the feedback collection modal |
+| `simulateCrash()` | Simulates a crash for testing |
+| `formatErrorReport(error, errorInfo)` | Formats an error into a structured report for sending |
+
+### Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `isLogEnabled` | boolean | false | Enable event logging |
+| `isLoggerEnabled` | boolean | false | Enable debug logging |
+| `isCrashEnabled` | boolean | false | Enable crash reporting |
+| `isFeedbackEnabled` | boolean | false | Enable feedback collection |
+| `autoCaptureCrashes` | boolean | true | Automatically capture unhandled JS errors |
+| `errorGrouping` | object | See below | Configure how errors are grouped and reported |
+
+### Error Grouping Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | boolean | true | Enable error grouping |
+| `flushIntervalMs` | number | 30000 | Interval to flush error groups (ms) |
+| `errorThreshold` | number | 5 | Number of errors to trigger flush |
+| `timeWindowMs` | number | 60000 | Time window for grouping errors (ms) |
+| `flushOnBackground` | boolean | true | Flush errors when app goes to background |
+| `requireNetwork` | boolean | true | Only flush when network is available |
+| `maxErrorsPerGroup` | number | 10 | Max errors to store per group |
+| `dynamicFlushInterval` | boolean | true | Adjust flush interval based on error volume | 
